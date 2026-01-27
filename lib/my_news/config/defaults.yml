@@ -1,0 +1,51 @@
+defaults:
+  database:
+    path: db/my_news.db
+
+  fetch:
+    concurrency: 10
+    user_agent: "MyNews/0.1 (+https://github.com/madbomber/my_news)"
+    timeout: 30
+    tor:
+      enabled: false
+      host: "127.0.0.1"
+      port: 9050
+
+  llm:
+    provider: anthropic
+    model: claude-sonnet-4-20250514
+    max_tokens: 300
+
+  freshrss:
+    url: ""
+    username: ""
+    api_key: ""
+
+  output:
+    markdown_dir: output/markdown
+    html_dir: output/html
+
+  feeds: []
+
+  themes: []
+
+  schedule:
+    times:
+      - "07:00"
+      - "13:00"
+      - "19:00"
+    timezone: America/Chicago
+
+development:
+  database:
+    path: db/my_news_dev.db
+
+test:
+  database:
+    path: ":memory:"
+
+production:
+  database:
+    path: db/my_news.db
+  fetch:
+    concurrency: 20

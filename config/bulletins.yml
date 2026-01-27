@@ -1,0 +1,40 @@
+themes:
+  - name: tech
+    keywords:
+      - programming
+      - software
+      - ruby
+      - python
+      - javascript
+      - rust
+      - linux
+      - open source
+      - github
+      - api
+    feeds:
+      - Hacker News
+      - Lobsters
+
+  - name: science
+    keywords:
+      - science
+      - research
+      - physics
+      - biology
+      - climate
+      - space
+      - nature
+    feeds: []
+
+  - name: general
+    keywords: []
+    feeds:
+      - Ars Technica
+      - The Verge
+
+schedule:
+  times:
+    - "07:00"
+    - "13:00"
+    - "19:00"
+  timezone: America/Chicago

@@ -1,0 +1,11 @@
+feeds:
+  - name: Hacker News
+    url: https://hnrss.org/frontpage
+  - name: Lobsters
+    url: https://lobste.rs/rss
+  - name: Ruby Weekly
+    url: https://rubyweekly.com/rss
+  - name: Ars Technica
+    url: https://feeds.arstechnica.com/arstechnica/index
+  - name: The Verge
+    url: https://www.theverge.com/rss/index.xml

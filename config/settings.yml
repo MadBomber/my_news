@@ -1,0 +1,21 @@
+database:
+  path: db/my_news.db
+
+fetch:
+  concurrency: 10
+  user_agent: "MyNews/0.1 (+https://github.com/madbomber/my_news)"
+  timeout: 30
+
+llm:
+  provider: anthropic
+  model: claude-sonnet-4-20250514
+  max_tokens: 300
+
+freshrss:
+  url: http://localhost/api/fever.php
+  username: admin
+  api_key: ""
+
+output:
+  markdown_dir: output/markdown
+  html_dir: output/html
