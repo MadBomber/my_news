@@ -12,8 +12,8 @@ defaults:
       port: 9050
 
   llm:
-    provider: anthropic
-    model: claude-sonnet-4-20250514
+    provider: ollama
+    model: "gpt-oss:latest"
     max_tokens: 300
 
   freshrss:
@@ -25,9 +25,49 @@ defaults:
     markdown_dir: output/markdown
     html_dir: output/html
 
-  feeds: []
+  feeds:
+    - name: Hacker News
+      url: https://hnrss.org/frontpage
+    - name: Lobsters
+      url: https://lobste.rs/rss
+    - name: Ruby Weekly
+      url: https://rubyweekly.com/rss
+    - name: Ars Technica
+      url: https://feeds.arstechnica.com/arstechnica/index
+    - name: The Verge
+      url: https://www.theverge.com/rss/index.xml
 
-  themes: []
+  themes:
+    - name: tech
+      keywords:
+        - programming
+        - software
+        - ruby
+        - python
+        - javascript
+        - rust
+        - linux
+        - open source
+        - github
+        - api
+      feeds:
+        - Hacker News
+        - Lobsters
+    - name: science
+      keywords:
+        - science
+        - research
+        - physics
+        - biology
+        - climate
+        - space
+        - nature
+      feeds: []
+    - name: general
+      keywords: []
+      feeds:
+        - Ars Technica
+        - The Verge
 
   schedule:
     times:

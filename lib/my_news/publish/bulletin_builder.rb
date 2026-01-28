@@ -16,6 +16,7 @@ module MyNews
         bulletins = []
 
         themes.each do |theme|
+          theme = stringify_keys(theme)
           articles = articles_for_theme(theme)
           next if articles.empty?
 
@@ -41,6 +42,10 @@ module MyNews
       end
 
       private
+
+      def stringify_keys(hash)
+        hash.transform_keys(&:to_s)
+      end
 
       def articles_for_theme(theme)
         feed_names = theme["feeds"] || []

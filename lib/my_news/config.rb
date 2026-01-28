@@ -77,10 +77,12 @@ module MyNews
 
     def load_external_configs
       feeds_data = load_yaml("feeds.yml")
-      @feeds_list = feeds_data.fetch("feeds", [])
+      external_feeds = feeds_data.fetch("feeds", nil)
+      @feeds_list = external_feeds unless external_feeds.nil?
 
       bulletins_data = load_yaml("bulletins.yml")
-      @themes_list = bulletins_data.fetch("themes", [])
+      external_themes = bulletins_data.fetch("themes", nil)
+      @themes_list = external_themes unless external_themes.nil?
     end
 
     def load_yaml(filename)
@@ -93,11 +95,23 @@ module MyNews
     public
 
     def feeds
-      @feeds_list || []
+      return @feeds_list if @feeds_list
+
+      begin
+        Array(super)
+      rescue NoMethodError
+        []
+      end
     end
 
     def themes
-      @themes_list || []
+      return @themes_list if @themes_list
+
+      begin
+        Array(super)
+      rescue NoMethodError
+        []
+      end
     end
   end
 end

@@ -54,10 +54,12 @@ class TestConfig < Minitest::Test
     assert_respond_to config, :llm
   end
 
-  def test_missing_config_dir_still_returns_feeds
+  def test_missing_config_dir_falls_back_to_defaults
     config = MyNews::Config.new(config_dir: "/nonexistent")
-    assert_equal [], config.feeds
-    assert_equal [], config.themes
+    assert_kind_of Array, config.feeds
+    assert_kind_of Array, config.themes
+    refute_empty config.feeds
+    refute_empty config.themes
   end
 
   def test_env_override

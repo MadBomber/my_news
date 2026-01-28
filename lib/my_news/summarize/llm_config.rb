@@ -12,6 +12,7 @@ module MyNews
           c.openai_api_key    = ENV["OPENAI_API_KEY"]
           c.anthropic_api_key = ENV["ANTHROPIC_API_KEY"]
           c.gemini_api_key    = ENV["GEMINI_API_KEY"]
+          c.ollama_api_base   = ENV.fetch("OLLAMA_API_BASE", "http://localhost:11434")
         end
       end
     end
