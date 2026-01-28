@@ -1,0 +1,198 @@
+# MkDocs Configuration for MyNews Documentation
+site_name: MyNews - RSS Feed Pipeline
+site_description: Ruby gem that transforms 200+ RSS feeds into themed bulletins published 3x daily
+site_author: Dewayne VanHoozer
+site_url: https://madbomber.github.io/my_news
+copyright: Copyright &copy; 2025 Dewayne VanHoozer
+
+# Repository information
+repo_name: madbomber/my_news
+repo_url: https://github.com/madbomber/my_news
+edit_uri: edit/main/docs/
+
+# Configuration
+theme:
+  name: material
+
+  # Color scheme - Default to light mode
+  palette:
+    # Palette toggle for light mode (default)
+    - scheme: default
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  # Typography
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+  # Logo and icon
+  icon:
+    repo: fontawesome/brands/github
+
+  # Theme features
+  features:
+    # Navigation
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.path
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+
+    # Table of contents
+    - toc.follow
+
+    # Search
+    - search.suggest
+    - search.highlight
+    - search.share
+
+    # Header
+    - header.autohide
+
+    # Content
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - content.action.edit
+    - content.action.view
+
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - tags
+
+# Extensions
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: madbomber
+      repo: my_news
+      normalize_issue_symbols: true
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Extra CSS
+extra_css:
+  - assets/css/custom.css
+
+# Social media and extra configuration
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/madbomber/my_news
+      name: MyNews on GitHub
+    - icon: fontawesome/solid/gem
+      link: https://rubygems.org/gems/my_news
+      name: MyNews on RubyGems
+
+  analytics:
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >-
+            Thanks for your feedback! Help us improve by creating an issue.
+
+# Navigation
+nav:
+  - Home:
+      - Overview: index.md
+  - Getting Started:
+      - getting-started/index.md
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quick-start.md
+  - Architecture:
+      - architecture/index.md
+      - Pipeline: architecture/pipeline.md
+      - Database: architecture/database.md
+  - Guides:
+      - guides/index.md
+      - Configuration: guides/configuration.md
+      - Feeds: guides/feeds.md
+      - Custom Handlers: guides/handlers.md
+      - Summarization: guides/summarization.md
+      - Clustering: guides/clustering.md
+      - Publishing: guides/publishing.md
+      - Scheduling: guides/scheduling.md
+      - Tor Proxy: guides/tor-proxy.md
+  - CLI Reference:
+      - cli/index.md
+  - API Reference:
+      - api/index.md
+      - Fetch: api/fetch.md
+      - Normalize: api/normalize.md
+      - Summarize: api/summarize.md
+      - Cluster: api/cluster.md
+      - Publish: api/publish.md
+      - Models: api/models.md
+  - Examples:
+      - examples/index.md
+  - Development:
+      - development/index.md
+      - Testing: development/testing.md
+      - Contributing: development/contributing.md
