@@ -1,12 +1,8 @@
 # frozen_string_literal: true
 
-require "debug_me"
-
 module MyNews
   module Publish
     class BulletinBuilder
-      include DebugMe
-
       def initialize(config: MyNews.config)
         @config = config
       end
@@ -16,7 +12,6 @@ module MyNews
         bulletins = []
 
         themes.each do |theme|
-          theme = stringify_keys(theme)
           articles = articles_for_theme(theme)
           next if articles.empty?
 
@@ -35,17 +30,12 @@ module MyNews
             published_at: Time.now
           )
           bulletins << bulletin
-          debug_me "Built bulletin: #{theme['name']} (#{ordered.size} articles)"
         end
 
         bulletins
       end
 
       private
-
-      def stringify_keys(hash)
-        hash.transform_keys(&:to_s)
-      end
 
       def articles_for_theme(theme)
         feed_names = theme["feeds"] || []

@@ -1,29 +1,32 @@
 # frozen_string_literal: true
 
-require "debug_me"
-
 module MyNews
   module Normalize
     class Normalizer
-      include DebugMe
-
-      def initialize(config: MyNews.config, db: MyNews.db)
+      def initialize(config: MyNews.config, db: MyNews.db, on_result: nil)
         @config = config
         @db = db
         @extractor = Extractor.new(config: config)
         @converter = Converter.new
+        @on_result = on_result
       end
 
       def call
         entries = unprocessed_entries
         count = 0
 
-        entries.each do |entry|
+        entries.each_with_index do |entry, i|
           html = @extractor.extract(entry)
-          next unless html
+          unless html
+            @on_result&.call(entry, :skipped, i + 1, entries.size)
+            next
+          end
 
           markdown = @converter.convert(html)
-          next if markdown.empty?
+          if markdown.empty?
+            @on_result&.call(entry, :skipped, i + 1, entries.size)
+            next
+          end
 
           Models::Article.create(
             entry_id:     entry.id,
@@ -31,9 +34,9 @@ module MyNews
             processed_at: Time.now
           )
           count += 1
+          @on_result&.call(entry, :ok, i + 1, entries.size)
         end
 
-        debug_me "Normalized #{count} entries into articles"
         count
       end
 

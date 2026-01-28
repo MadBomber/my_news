@@ -1,70 +1,163 @@
 # frozen_string_literal: true
 
 require "thor"
-require "debug_me"
+require "ruby-progressbar"
 
 module MyNews
   class CLI < Thor
-    include DebugMe
-
     desc "fetch", "Fetch all enabled RSS feeds"
     def fetch
       MyNews.setup
-      fetcher = Fetch::Fetcher.new
-      results = fetcher.call
-
       total_new = 0
-      results.each do |feed_id, result|
-        feed = Models::Feed[feed_id]
-        total_new += result[:new_entries]
-        debug_me "#{feed.name}: #{result[:status]} (#{result[:new_entries]} new)"
-      end
-      debug_me "Total new entries: #{total_new}"
+      errors = []
+      feed_count = Models::Feed.enabled.count
+
+      bar = ProgressBar.create(
+        title: "Fetching",
+        total: feed_count,
+        format: "%t: |%B| %c/%C %e",
+        output: $stdout
+      )
+
+      on_result = ->(feed, result) {
+        name = feed.name || "Unknown"
+        new_count = result[:new_entries]
+        total_new += new_count
+
+        case result[:status]
+        when :ok
+          bar.log "  #{name}: #{new_count} new entries" if new_count > 0
+        when :not_modified
+          # silent
+        when :circuit_open
+          bar.log "  #{name}: circuit open (skipped)"
+        else
+          msg = result[:message] || "HTTP #{result[:code]}"
+          errors << "#{name}: #{msg}"
+          bar.log "  #{name}: error (#{msg})"
+        end
+        bar.increment
+      }
+
+      fetcher = Fetch::Fetcher.new(on_result: on_result)
+      fetcher.call
+      bar.finish
+
+      puts "Fetch complete: #{total_new} new entries from #{feed_count} feeds"
+      puts "  #{errors.size} feeds had errors" if errors.any?
     end
 
     desc "normalize", "Convert raw entries to markdown articles"
     def normalize
       MyNews.setup
-      normalizer = Normalize::Normalizer.new
-      normalizer.call
+      processed_ids = Models::Article.select(:entry_id).map(:entry_id)
+      pending = if processed_ids.empty?
+                  Models::Entry.count
+                else
+                  Models::Entry.exclude(id: processed_ids).count
+                end
+
+      if pending == 0
+        puts "No entries to normalize"
+        return
+      end
+
+      bar = ProgressBar.create(
+        title: "Normalizing",
+        total: pending,
+        format: "%t: |%B| %c/%C %e",
+        output: $stdout
+      )
+
+      on_result = ->(_entry, _status, _current, _total) {
+        bar.increment
+      }
+
+      normalizer = Normalize::Normalizer.new(on_result: on_result)
+      count = normalizer.call
+      bar.finish
+
+      puts "Normalized #{count} entries into articles"
     end
 
     desc "summarize", "Summarize articles via LLM"
     def summarize
       MyNews.setup
-      summarizer = Summarize::Summarizer.new
-      summarizer.call
+      pending = Models::Article.where(summary: nil).count
+
+      if pending == 0
+        puts "No articles to summarize"
+        return
+      end
+
+      bar = ProgressBar.create(
+        title: "Summarizing",
+        total: pending,
+        format: "%t: |%B| %c/%C %e",
+        output: $stdout
+      )
+
+      on_progress = ->(_status) {
+        bar.increment
+      }
+
+      summarizer = Summarize::Summarizer.new(on_progress: on_progress)
+      count = summarizer.call
+      bar.finish
+
+      skipped = pending - count
+      puts "Summarized #{count} articles" + (skipped > 0 ? " (#{skipped} skipped)" : "")
     end
 
     desc "cluster", "Deduplicate and detect recurring topics"
     def cluster
       MyNews.setup
-      Cluster::Deduplicator.new.call
-      Cluster::Recurrence.new.call
+      puts "Clustering articles..."
+      clustered = Cluster::Deduplicator.new.call
+      recurring = Cluster::Recurrence.new.call
+      puts "Clustered #{clustered || 0} articles into duplicate groups"
+      puts "Flagged #{recurring} recurring topics"
     end
 
     desc "publish", "Build and publish themed bulletins"
     def publish
       MyNews.setup
+      puts "Publishing bulletins..."
       publisher = Publish::Publisher.new
-      publisher.call
+      count = publisher.call
+      if count > 0
+        puts "Published #{count} themed bulletins"
+      else
+        puts "No bulletins to publish"
+      end
     end
 
     desc "pipeline", "Run full pipeline: fetch → normalize → summarize → cluster → publish"
     def pipeline
       MyNews.setup
+      puts "Running full pipeline..."
       invoke :fetch
       invoke :normalize
       invoke :summarize
       invoke :cluster
       invoke :publish
+      puts "Pipeline complete"
     end
+
+    map "run" => :pipeline
 
     desc "schedule", "Run the full pipeline on a cron schedule (3x/day by default)"
     def schedule
       MyNews.setup
+      config = MyNews.config
+      puts <<~HEREDOC
+        Starting scheduler (#{config.schedule_timezone})
+        Schedule: #{config.schedule_times.join(", ")}
+        Press Ctrl-C to stop.
+      HEREDOC
       scheduler = Publish::Scheduler.new
       scheduler.start
+      puts "Scheduler stopped."
     end
 
     desc "search QUERY", "Full-text search articles using FTS5"
@@ -78,7 +171,7 @@ module MyNews
         .all
 
       if results.empty?
-        debug_me "No results for '#{query}'"
+        puts "No results for '#{query}'"
         return
       end
 
@@ -111,7 +204,7 @@ module MyNews
       feed_list = options[:all] ? Models::Feed.order(:name).all : Models::Feed.enabled.order(:name).all
 
       if feed_list.empty?
-        debug_me "No feeds configured"
+        puts "No feeds configured"
         return
       end
 
@@ -141,7 +234,7 @@ module MyNews
       MyNews.setup
 
       if Models::Feed.where(url: url).any?
-        debug_me "Feed already exists: #{url}"
+        puts "Feed already exists: #{url}"
         return
       end
 
@@ -151,7 +244,7 @@ module MyNews
         handler: options[:handler],
         enabled: true
       )
-      debug_me "Added feed: #{options[:name] || url}"
+      puts "Added feed: #{options[:name] || url}"
     end
 
     desc "feed_remove URL", "Remove a feed by URL"
@@ -160,16 +253,17 @@ module MyNews
       feed = Models::Feed.where(url: url).first
 
       unless feed
-        debug_me "Feed not found: #{url}"
+        puts "Feed not found: #{url}"
         return
       end
 
+      name = feed.name || url
       # Remove associated entries and articles
       entry_ids = Models::Entry.where(feed_id: feed.id).select_map(:id)
       Models::Article.where(entry_id: entry_ids).delete unless entry_ids.empty?
       Models::Entry.where(feed_id: feed.id).delete
       feed.delete
-      debug_me "Removed feed: #{feed.name || url}"
+      puts "Removed feed: #{name}"
     end
 
     desc "feed_toggle URL", "Enable or disable a feed"
@@ -178,13 +272,13 @@ module MyNews
       feed = Models::Feed.where(url: url).first
 
       unless feed
-        debug_me "Feed not found: #{url}"
+        puts "Feed not found: #{url}"
         return
       end
 
       feed.update(enabled: !feed.enabled)
       state = feed.enabled ? "enabled" : "disabled"
-      debug_me "#{feed.name || url}: #{state}"
+      puts "#{feed.name || url}: #{state}"
     end
 
     desc "status", "Show pipeline status and statistics"

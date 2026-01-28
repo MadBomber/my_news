@@ -6,6 +6,9 @@ defaults:
     concurrency: 10
     user_agent: "MyNews/0.1 (+https://github.com/madbomber/my_news)"
     timeout: 30
+    circuit_breaker:
+      failure_threshold: 3
+      reset_after: 300
     tor:
       enabled: false
       host: "127.0.0.1"
@@ -26,23 +29,245 @@ defaults:
     html_dir: output/html
 
   feeds:
+    # Aggregators & News
     - name: Hacker News
       url: https://hnrss.org/frontpage
     - name: Lobsters
       url: https://lobste.rs/rss
-    - name: Ruby Weekly
-      url: https://rubyweekly.com/rss
     - name: Ars Technica
       url: https://feeds.arstechnica.com/arstechnica/index
     - name: The Verge
       url: https://www.theverge.com/rss/index.xml
+    # Ruby Aggregators & News
+    - name: Ruby Weekly
+      url: https://rubyweekly.com/rss
+    - name: RubyFlow
+      url: https://www.rubyflow.com/rss
+    - name: Rubyland News
+      url: https://rubyland.news/feed.rss
+    # Core Team & Framework Blogs
+    - name: Ruby Language News
+      url: https://www.ruby-lang.org/en/feeds/news.rss
+    - name: Rails Blog
+      url: https://rubyonrails.org/feed.xml
+    - name: RubyGems Blog
+      url: https://blog.rubygems.org/atom.xml
+    # Notable Ruby Blogs
+    - name: Schneems
+      url: https://www.schneems.com/feed.xml
+    - name: Evil Martians
+      url: https://evilmartians.com/chronicles.atom
+    - name: Thoughtbot Ruby
+      url: https://thoughtbot.com/blog/feed
+    - name: Saeloun
+      url: https://blog.saeloun.com/feed.xml
+    - name: BigBinary
+      url: https://www.bigbinary.com/blog/feed.xml
+    - name: Zverok
+      url: https://zverok.space/feed.xml
+    - name: Nithin Bekal
+      url: https://nithinbekal.com/feed.xml
+    - name: Solnic
+      url: https://solnic.dev/feed/
+    # Ruby Podcasts
+    - name: Ruby on Rails Podcast
+      url: https://feeds.fireside.fm/therubyonrailspodcast/rss
+    - name: Remote Ruby
+      url: https://feeds.buzzsprout.com/2260490.rss
+    - name: Ruby Rogues
+      url: https://www.spreaker.com/show/6102073/episodes/feed
+    - name: The Ruby AI Podcast
+      url: https://feeds.buzzsprout.com/2388930.rss
+    # MadBomber Gems (RubyGems.org version feeds)
+    - name: "gem: cli_helper"
+      url: https://rubygems.org/gems/cli_helper/versions.atom
+    - name: "gem: leaflet_helper"
+      url: https://rubygems.org/gems/leaflet_helper/versions.atom
+    - name: "gem: aia"
+      url: https://rubygems.org/gems/aia/versions.atom
+    - name: "gem: debug_me"
+      url: https://rubygems.org/gems/debug_me/versions.atom
+    - name: "gem: sqa"
+      url: https://rubygems.org/gems/sqa/versions.atom
+    - name: "gem: woodwing_elvis"
+      url: https://rubygems.org/gems/woodwing_elvis/versions.atom
+    - name: "gem: justprep"
+      url: https://rubygems.org/gems/justprep/versions.atom
+    - name: "gem: rethinkdb_helper"
+      url: https://rubygems.org/gems/rethinkdb_helper/versions.atom
+    - name: "gem: prompt_manager"
+      url: https://rubygems.org/gems/prompt_manager/versions.atom
+    - name: "gem: kick_the_tires"
+      url: https://rubygems.org/gems/kick_the_tires/versions.atom
+    - name: "gem: ai_client"
+      url: https://rubygems.org/gems/ai_client/versions.atom
+    - name: "gem: ocassionally"
+      url: https://rubygems.org/gems/ocassionally/versions.atom
+    - name: "gem: smart_message"
+      url: https://rubygems.org/gems/smart_message/versions.atom
+    - name: "gem: htm"
+      url: https://rubygems.org/gems/htm/versions.atom
+    - name: "gem: ragdoll"
+      url: https://rubygems.org/gems/ragdoll/versions.atom
+    - name: "gem: shared_tools"
+      url: https://rubygems.org/gems/shared_tools/versions.atom
+    - name: "gem: simple_flow"
+      url: https://rubygems.org/gems/simple_flow/versions.atom
+    - name: "gem: myway_config"
+      url: https://rubygems.org/gems/myway_config/versions.atom
+    - name: "gem: agent99"
+      url: https://rubygems.org/gems/agent99/versions.atom
+    - name: "gem: ragdoll-cli"
+      url: https://rubygems.org/gems/ragdoll-cli/versions.atom
+    - name: "gem: ragdoll-rails"
+      url: https://rubygems.org/gems/ragdoll-rails/versions.atom
+    - name: "gem: trak_flow"
+      url: https://rubygems.org/gems/trak_flow/versions.atom
+    - name: "gem: api_key_manager"
+      url: https://rubygems.org/gems/api_key_manager/versions.atom
+    - name: "gem: aigcm"
+      url: https://rubygems.org/gems/aigcm/versions.atom
+    - name: "gem: sqa-tai"
+      url: https://rubygems.org/gems/sqa-tai/versions.atom
+    - name: "gem: dumb_stock_api"
+      url: https://rubygems.org/gems/dumb_stock_api/versions.atom
+    - name: "gem: one_time_pad"
+      url: https://rubygems.org/gems/one_time_pad/versions.atom
+    - name: "gem: simple_acp"
+      url: https://rubygems.org/gems/simple_acp/versions.atom
+    - name: "gem: kbs"
+      url: https://rubygems.org/gems/kbs/versions.atom
+    - name: "gem: fact_db"
+      url: https://rubygems.org/gems/fact_db/versions.atom
+    - name: "gem: sqa_demo-sinatra"
+      url: https://rubygems.org/gems/sqa_demo-sinatra/versions.atom
+    - name: "gem: robot_lab"
+      url: https://rubygems.org/gems/robot_lab/versions.atom
+    - name: "gem: bunny_farm"
+      url: https://rubygems.org/gems/bunny_farm/versions.atom
+    - name: "gem: writers_room"
+      url: https://rubygems.org/gems/writers_room/versions.atom
+    - name: MadBomber Blog
+      url: https://madbomber.github.io/blog/feed.xml
+    # AI Research & Labs
+    - name: OpenAI Blog
+      url: https://openai.com/news/rss.xml
+    - name: Anthropic Blog
+      url: https://raw.githubusercontent.com/conoro/anthropic-engineering-rss-feed/main/anthropic_engineering_rss.xml
+    - name: Google AI Blog
+      url: https://blog.google/technology/ai/rss/
+    - name: Meta AI Blog
+      url: https://engineering.fb.com/feed/
+    - name: Google DeepMind
+      url: https://deepmind.google/blog/rss.xml
+    - name: Hugging Face Blog
+      url: https://huggingface.co/blog/feed.xml
+    # AI News & Aggregators
+    - name: The Decoder
+      url: https://the-decoder.com/feed/
+    - name: MarkTechPost
+      url: https://www.marktechpost.com/feed/
+    - name: Import AI
+      url: https://jack-clark.net/feed/
+    # AI Practitioners & Researchers
+    - name: Simon Willison
+      url: https://simonwillison.net/atom/everything/
+    - name: Lilian Weng
+      url: https://lilianweng.github.io/index.xml
+    - name: Andrej Karpathy
+      url: https://karpathy.github.io/feed.xml
+    - name: Latent Space
+      url: https://www.latent.space/feed
+    - name: Interconnects
+      url: https://www.interconnects.ai/feed
+    - name: Sebastian Raschka
+      url: https://sebastianraschka.com/rss_feed.xml
+    # AI Papers
+    - name: arXiv AI
+      url: https://arxiv.org/rss/cs.AI
+    - name: arXiv Computational Linguistics
+      url: https://arxiv.org/rss/cs.CL
+    - name: arXiv Machine Learning
+      url: https://arxiv.org/rss/cs.LG
 
   themes:
+    - name: ruby
+      keywords:
+        - ruby
+        - rails
+        - gem
+        - bundler
+        - rspec
+        - minitest
+        - sidekiq
+        - puma
+        - turbo
+        - hotwire
+        - sequel
+      feeds:
+        - Ruby Weekly
+        - RubyFlow
+        - Rubyland News
+        - Ruby Language News
+        - Rails Blog
+        - RubyGems Blog
+        - Rails Weblog
+        - Schneems
+        - Evil Martians
+        - Thoughtbot Ruby
+        - Saeloun
+        - BigBinary
+        - Zverok
+        - Nithin Bekal
+        - Solnic
+        - Ruby on Rails Podcast
+        - Remote Ruby
+        - Ruby Rogues
+        - The Ruby AI Podcast
+    - name: ai
+      keywords:
+        - artificial intelligence
+        - machine learning
+        - deep learning
+        - neural network
+        - large language model
+        - llm
+        - gpt
+        - claude
+        - transformer
+        - diffusion
+        - reinforcement learning
+        - natural language processing
+        - computer vision
+        - generative ai
+        - fine-tuning
+        - rag
+        - embedding
+        - prompt engineering
+      feeds:
+        - OpenAI Blog
+        - Anthropic Blog
+        - Google AI Blog
+        - Meta AI Blog
+        - Google DeepMind
+        - Hugging Face Blog
+        - The Decoder
+        - MarkTechPost
+        - Import AI
+        - Simon Willison
+        - Lilian Weng
+        - Andrej Karpathy
+        - Latent Space
+        - Interconnects
+        - Sebastian Raschka
+        - arXiv AI
+        - arXiv Computational Linguistics
+        - arXiv Machine Learning
+        - The Ruby AI Podcast
     - name: tech
       keywords:
         - programming
         - software
-        - ruby
         - python
         - javascript
         - rust
@@ -63,6 +288,44 @@ defaults:
         - space
         - nature
       feeds: []
+    - name: madbomber
+      keywords: []
+      feeds:
+        - "gem: cli_helper"
+        - "gem: leaflet_helper"
+        - "gem: aia"
+        - "gem: debug_me"
+        - "gem: sqa"
+        - "gem: woodwing_elvis"
+        - "gem: justprep"
+        - "gem: rethinkdb_helper"
+        - "gem: prompt_manager"
+        - "gem: kick_the_tires"
+        - "gem: ai_client"
+        - "gem: ocassionally"
+        - "gem: smart_message"
+        - "gem: htm"
+        - "gem: ragdoll"
+        - "gem: shared_tools"
+        - "gem: simple_flow"
+        - "gem: myway_config"
+        - "gem: agent99"
+        - "gem: ragdoll-cli"
+        - "gem: ragdoll-rails"
+        - "gem: trak_flow"
+        - "gem: api_key_manager"
+        - "gem: aigcm"
+        - "gem: sqa-tai"
+        - "gem: dumb_stock_api"
+        - "gem: one_time_pad"
+        - "gem: simple_acp"
+        - "gem: kbs"
+        - "gem: fact_db"
+        - "gem: sqa_demo-sinatra"
+        - "gem: robot_lab"
+        - "gem: bunny_farm"
+        - "gem: writers_room"
+        - MadBomber Blog
     - name: general
       keywords: []
       feeds:

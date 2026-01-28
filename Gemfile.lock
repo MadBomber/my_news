@@ -9,6 +9,7 @@ PATH
       nokogiri (~> 1.16)
       reverse_markdown (~> 2.1)
       rss (~> 0.3)
+      ruby-progressbar (~> 1.13)
       ruby_llm (~> 1.0)
       rufus-scheduler (~> 3.9)
       sequel (~> 5.0)
@@ -134,6 +135,7 @@ GEM
     rss (0.3.2)
       rexml
     ruby-next-core (1.2.0)
+    ruby-progressbar (1.13.0)
     ruby_llm (1.11.0)
       base64
       event_stream_parser (~> 1)
@@ -246,6 +248,7 @@ CHECKSUMS
   rexml (3.4.4) sha256=19e0a2c3425dfbf2d4fc1189747bdb2f849b6c5e74180401b15734bc97b5d142
   rss (0.3.2) sha256=3bd0446d32d832cda00ba07f4b179401f903b52ea1fdaac0f1f08de61a501efa
   ruby-next-core (1.2.0) sha256=f6a7d00bb5186cecbb02f7f1845a0f3a2c9788d35b6ccff5c9be3f0d46799b86
+  ruby-progressbar (1.13.0) sha256=80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33
   ruby_llm (1.11.0) sha256=c1bc17bb02a7e805d8f62ea6ada2ecfe7782fc955e9440b53a2fdbd00e5ec9cc
   ruby_llm-schema (0.2.5) sha256=b08cd42e8de7100325e2e868672a56f1915eb23692bb808f51f214e41392104f
   rufus-scheduler (3.9.2) sha256=55fa9e4db0ff69d7f38c804f17baba0c9bce5cba39984ae3c5cf6c039d1323b9

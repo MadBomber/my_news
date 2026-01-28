@@ -2,13 +2,10 @@
 
 require "faraday"
 require "digest"
-require "debug_me"
 
 module MyNews
   module Publish
     class Freshrss
-      include DebugMe
-
       def initialize(config: MyNews.config)
         @url      = config.freshrss_url
         @username = config.freshrss_username
@@ -33,12 +30,9 @@ module MyNews
 
         if response.success?
           bulletin.update(pushed_freshrss: true)
-          debug_me "Pushed bulletin #{bulletin.theme} to FreshRSS"
-        else
-          debug_me "FreshRSS push failed: #{response.status}"
         end
       rescue => e
-        debug_me "FreshRSS error: #{e.message}"
+        # FreshRSS push error
       end
 
       private

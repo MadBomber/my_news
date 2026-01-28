@@ -5,13 +5,10 @@ require "async"
 require "async/barrier"
 require "async/semaphore"
 require "async/http/internet"
-require "debug_me"
 
 module MyNews
   module Normalize
     class Extractor
-      include DebugMe
-
       def initialize(config: MyNews.config)
         @config = config
       end
@@ -36,7 +33,7 @@ module MyNews
             response = internet.get(url, [["user-agent", @config.user_agent]])
             body = response.read if response.status == 200
           rescue => e
-            debug_me "Full-text fetch error for #{url}: #{e.message}"
+            # Full-text fetch error
           ensure
             internet.close
           end

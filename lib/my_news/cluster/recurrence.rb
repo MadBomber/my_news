@@ -1,12 +1,8 @@
 # frozen_string_literal: true
 
-require "debug_me"
-
 module MyNews
   module Cluster
     class Recurrence
-      include DebugMe
-
       LOOKBACK_DAYS = 3
       HAMMING_THRESHOLD = 12
 
@@ -30,7 +26,6 @@ module MyNews
           end
         end
 
-        debug_me "Flagged #{count} recurring articles"
         count
       end
 

@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
-require "debug_me"
-
 module MyNews
   module Summarize
     class Summarizer
-      include DebugMe
-
-      def initialize(config: MyNews.config)
+      def initialize(config: MyNews.config, on_progress: nil)
         @config = config
+        @on_progress = on_progress
         LlmConfig.setup
         @model = config.llm_model
         @max_tokens = config.llm_max_tokens
@@ -21,13 +18,16 @@ module MyNews
 
         articles.each do |article|
           summary = summarize(article.markdown)
-          next unless summary
+          unless summary
+            @on_progress&.call(:skipped)
+            next
+          end
 
           article.update(summary: summary)
           count += 1
+          @on_progress&.call(:ok)
         end
 
-        debug_me "Summarized #{count} articles"
         count
       end
 
@@ -38,7 +38,6 @@ module MyNews
         response = chat.ask("Summarize this article concisely:\n\n#{text}")
         response.content
       rescue => e
-        debug_me "LLM error: #{e.message}"
         nil
       end
 

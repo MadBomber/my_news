@@ -28,6 +28,7 @@ module MyNews
         require_relative "my_news/fetch/handlers/hacker_news"
         require_relative "my_news/fetch/handlers/mastodon"
         require_relative "my_news/fetch/tor_proxy"
+        require_relative "my_news/fetch/circuit"
         require_relative "my_news/fetch/fetcher"
         require_relative "my_news/normalize/extractor"
         require_relative "my_news/normalize/converter"

@@ -43,4 +43,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "ruby_llm", "~> 1.0"
   spec.add_dependency "faraday", "~> 2.0"
   spec.add_dependency "rufus-scheduler", "~> 3.9"
+  spec.add_dependency "ruby-progressbar", "~> 1.13"
 end

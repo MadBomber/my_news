@@ -5,13 +5,11 @@ require "async/barrier"
 require "async/semaphore"
 require "async/http/internet"
 require "rss"
-require "debug_me"
+require "console"
 
 module MyNews
   module Fetch
     class Fetcher
-      include DebugMe
-
       attr_reader :config, :db
 
       HANDLER_MAP = {
@@ -19,9 +17,11 @@ module MyNews
         "mastodon"    => "MyNews::Fetch::Handlers::Mastodon"
       }.freeze
 
-      def initialize(config: MyNews.config, db: MyNews.db)
+      def initialize(config: MyNews.config, db: MyNews.db, on_result: nil)
         @config = config
         @db = db
+        @circuit = Circuit.new(config: config)
+        @on_result = on_result
       end
 
       def call
@@ -55,53 +55,108 @@ module MyNews
 
         Object.const_get(klass_name).new(feed)
       rescue NameError
-        debug_me "Unknown handler '#{handler_name}', using base"
         Handlers::Base.new(feed)
       end
 
       def fetch_all(feeds)
         results = {}
 
-        Async do
-          internet = Async::HTTP::Internet.new
-          semaphore = Async::Semaphore.new(config.fetch_concurrency)
-          barrier = Async::Barrier.new
+        suppress_async_console do
+          Async do
+            internet = Async::HTTP::Internet.new
+            semaphore = Async::Semaphore.new(config.fetch_concurrency)
+            barrier = Async::Barrier.new
 
-          feeds.each do |feed|
-            barrier.async do
-              semaphore.acquire do
-                results[feed.id] = fetch_one(internet, feed)
+            feeds.each do |feed|
+              if @circuit.open?(feed)
+                result = { status: :circuit_open, message: "skipped — #{feed.consecutive_failures} consecutive failures", new_entries: 0 }
+                results[feed.id] = result
+                notify_result(feed, result)
+                next
+              end
+
+              barrier.async do
+                semaphore.acquire do
+                  result = fetch_with_circuit(internet, feed)
+                  results[feed.id] = result
+                  notify_result(feed, result)
+                end
               end
             end
-          end
 
-          barrier.wait
-        ensure
-          internet&.close
+            barrier.wait
+          ensure
+            barrier&.stop
+            internet&.close
+          end
         end
 
         results
       end
 
+      def fetch_with_circuit(internet, feed)
+        result = fetch_one(internet, feed)
+
+        if result[:status] == :error
+          failures = (feed.consecutive_failures || 0) + 1
+          feed.update(consecutive_failures: failures, last_error: result[:message] || "HTTP #{result[:code]}")
+        else
+          feed.update(consecutive_failures: 0, last_error: nil) if (feed.consecutive_failures || 0) > 0
+        end
+
+        result
+      end
+
+      def suppress_async_console
+        Console.logger.level = :fatal
+        yield
+      end
+
+      def notify_result(feed, result)
+        @on_result&.call(feed, result)
+      end
+
+      MAX_REDIRECTS = 5
+
       def fetch_one(internet, feed)
         handler = handler_for(feed)
         headers = build_headers(feed, handler)
-        response = internet.get(feed.url, headers)
+        url = feed.url
+        redirects = 0
+        timeout = config.fetch_timeout
 
-        case response.status
-        when 304
-          { status: :not_modified, new_entries: 0 }
-        when 200
-          body = response.read
-          body = handler.preprocess_body(body)
-          update_cache_headers(feed, response)
-          count = parse_and_store(feed, body, handler)
-          { status: :ok, new_entries: count }
-        else
-          { status: :error, code: response.status, new_entries: 0 }
+        Async::Task.current.with_timeout(timeout) do
+          loop do
+            response = internet.get(url, headers)
+
+            case response.status
+            when 304
+              return { status: :not_modified, new_entries: 0 }
+            when 200
+              body = response.read
+              body = handler.preprocess_body(body)
+              update_cache_headers(feed, response)
+              count = parse_and_store(feed, body, handler)
+              return { status: :ok, new_entries: count }
+            when 301, 302, 303, 307, 308
+              redirects += 1
+              if redirects > MAX_REDIRECTS
+                return { status: :error, message: "too many redirects", new_entries: 0 }
+              end
+              location = response.headers["location"]
+              unless location
+                return { status: :error, message: "redirect without location", new_entries: 0 }
+              end
+              response.read # drain body
+              url = location
+            else
+              return { status: :error, code: response.status, new_entries: 0 }
+            end
+          end
         end
+      rescue Async::TimeoutError
+        { status: :error, message: "timeout after #{config.fetch_timeout}s", new_entries: 0 }
       rescue => e
-        debug_me "Fetch error for #{feed.url}: #{e.message}"
         { status: :error, message: e.message, new_entries: 0 }
       end
 

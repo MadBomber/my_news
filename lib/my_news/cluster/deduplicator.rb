@@ -1,12 +1,8 @@
 # frozen_string_literal: true
 
-require "debug_me"
-
 module MyNews
   module Cluster
     class Deduplicator
-      include DebugMe
-
       HAMMING_THRESHOLD = 10
 
       def initialize(config: MyNews.config)
@@ -31,7 +27,6 @@ module MyNews
           hash = Simhash.compute(text)
           article.update(simhash: hash)
         end
-        debug_me "Computed simhash for #{articles.size} articles"
       end
 
       def article_title(article)
@@ -61,7 +56,6 @@ module MyNews
           next_cluster += 1
         end
 
-        debug_me "Assigned #{clustered} articles to clusters"
         clustered
       end
     end

@@ -33,6 +33,14 @@ module MyNews
       fetch.timeout
     end
 
+    def circuit_breaker_threshold
+      fetch.circuit_breaker.failure_threshold
+    end
+
+    def circuit_breaker_reset_after
+      fetch.circuit_breaker.reset_after
+    end
+
     def llm_provider
       llm.provider
     end
@@ -95,22 +103,40 @@ module MyNews
     public
 
     def feeds
-      return @feeds_list if @feeds_list
-
-      begin
-        Array(super)
-      rescue NoMethodError
-        []
-      end
+      list = if @feeds_list
+               @feeds_list
+             else
+               begin
+                 Array(super)
+               rescue NoMethodError
+                 []
+               end
+             end
+      stringify_list(list)
     end
 
     def themes
-      return @themes_list if @themes_list
+      list = if @themes_list
+               @themes_list
+             else
+               begin
+                 Array(super)
+               rescue NoMethodError
+                 []
+               end
+             end
+      stringify_list(list)
+    end
 
-      begin
-        Array(super)
-      rescue NoMethodError
-        []
+    private
+
+    def stringify_list(list)
+      list.map { |item| item.is_a?(Hash) ? deep_stringify_keys(item) : item }
+    end
+
+    def deep_stringify_keys(hash)
+      hash.each_with_object({}) do |(k, v), result|
+        result[k.to_s] = v.is_a?(Hash) ? deep_stringify_keys(v) : v
       end
     end
   end

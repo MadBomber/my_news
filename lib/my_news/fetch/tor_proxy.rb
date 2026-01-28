@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "debug_me"
-
 module MyNews
   module Fetch
     # SOCKS5 proxy wrapper for routing feed fetches through Tor.
@@ -14,8 +12,6 @@ module MyNews
     #       host: 127.0.0.1
     #       port: 9050
     module TorProxy
-      include DebugMe
-
       module_function
 
       def endpoint(config: MyNews.config)

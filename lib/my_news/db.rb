@@ -25,6 +25,8 @@ module MyNews
         String :last_modified
         Time :last_fetched_at
         TrueClass :enabled, default: true
+        Integer :consecutive_failures, default: 0
+        String :last_error
       end
 
       db.create_table?(:entries) do
@@ -58,7 +60,18 @@ module MyNews
         TrueClass :pushed_freshrss, default: false
       end
 
+      migrate_feeds(db)
       create_fts(db)
+    end
+
+    def migrate_feeds(db)
+      columns = db[:feeds].columns
+      unless columns.include?(:consecutive_failures)
+        db.alter_table(:feeds) do
+          add_column :consecutive_failures, Integer, default: 0
+          add_column :last_error, String
+        end
+      end
     end
 
     def create_fts(db)
