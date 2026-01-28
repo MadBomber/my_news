@@ -1,4 +1,6 @@
-# MyRss
+# MyNews
+
+![my_news](docs/assets/images/my_news.gif)
 
 TODO: Delete this and the text below, and describe your gem
 
