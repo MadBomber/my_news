@@ -1,41 +1,107 @@
 # MyNews
 
-![my_news](docs/assets/images/my_news.gif)
+A Ruby gem that transforms 200+ RSS feeds into themed bulletins published 3x daily. The pipeline fetches, normalizes, summarizes (via LLM), deduplicates, and publishes — outputting to both FreshRSS and local Markdown/HTML files.
 
-TODO: Delete this and the text below, and describe your gem
+<table><tr>
+<td width="340">
+  <img src="docs/assets/images/my_news.gif" alt="MyNews" width="320">
+  <a href="https://madbomber.github.io/my_news">Full Documentation</a>
+</td>
+<td>
+**Key Features**
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/my_rss`. To experiment with that code, run `bin/console` for an interactive prompt.
+- Async concurrent fetching with ETag caching and rate limiting
+- Full-text extraction and HTML-to-Markdown normalization
+- LLM-powered summarization (OpenAI, Anthropic, Gemini via `ruby_llm`)
+- SimHash deduplication and recurring topic detection
+- Themed bulletin assembly with scheduled publishing
+- FreshRSS Fever API integration
+- SQLite persistence with FTS5 full-text search
+- Tor proxy support for restricted feeds
+
+</td>
+</tr></table>
+
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+Add to your Gemfile:
 
-Install the gem and add to the application's Gemfile by executing:
-
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```ruby
+gem "my_news"
 ```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+Then run:
 
 ```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+bundle install
 ```
+
+## Pipeline Architecture
+
+Each stage runs independently via CLI or chained together:
+
+```
+fetch → normalize → summarize → cluster → publish
+```
+
+| Stage | Description |
+|-------|-------------|
+| **fetch** | Async HTTP with ETag caching, rate limiting, per-feed handlers |
+| **normalize** | Readability full-text extraction, HTML-to-Markdown conversion |
+| **summarize** | LLM summarization via `ruby_llm` (multi-provider) |
+| **cluster** | SimHash deduplication, recurring topic detection |
+| **publish** | Themed bulletins to FreshRSS and local Markdown/HTML files |
 
 ## Usage
 
-TODO: Write usage instructions here
+```bash
+# Run the full pipeline
+my_news run
+
+# Run individual stages
+my_news fetch
+my_news normalize
+my_news summarize
+my_news cluster
+my_news publish
+
+# Schedule automatic 3x daily runs
+my_news schedule
+```
+
+## Configuration
+
+Configuration files live in `config/`:
+
+- `feeds.yml` — Feed list with per-feed overrides
+- `settings.yml` — Global settings (LLM provider, proxy, schedule)
+- `bulletins.yml` — Theme definitions and publish schedule
+
+### LLM Setup
+
+```yaml
+# config/settings.yml
+llm:
+  provider: anthropic
+  model: claude-sonnet-4-20250514
+  max_tokens: 300
+```
+
+API keys are read from environment variables: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`.
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```bash
+bin/setup          # Install dependencies
+bundle exec rake   # Run tests (Minitest)
+bin/console        # Interactive console with gem loaded
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/my_rss.
+Bug reports and pull requests are welcome on [GitHub](https://github.com/madbomber/my_news).
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+Available as open source under the [MIT License](https://opensource.org/licenses/MIT).

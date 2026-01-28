@@ -1,8 +1,27 @@
 # MyNews
 
-**RSS feed pipeline that transforms 200+ feeds into themed bulletins published 3x daily.**
+A Ruby gem that transforms 200+ RSS feeds into themed bulletins published 3x daily. The pipeline fetches, normalizes, summarizes (via LLM), deduplicates, and publishes — outputting to both FreshRSS and local Markdown/HTML files.
 
-MyNews fetches RSS feeds concurrently, extracts full-text content, summarizes articles via LLM, deduplicates with SimHash clustering, and publishes themed bulletins to FreshRSS and local files.
+<table><tr>
+<td width="400">
+  <video controls width="380">
+    <source src="assets/images/my_news.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</td>
+<td>
+<h2>Key Features</h2>
+
+<li> Async concurrent fetching with ETag caching and rate limiting
+<li> Full-text extraction and HTML-to-Markdown normalization
+<li> LLM-powered summarization (OpenAI, Anthropic, Gemini via `ruby_llm`)
+<li> SimHash deduplication and recurring topic detection
+<li> Themed bulletin assembly with scheduled publishing
+<li> FreshRSS Fever API integration
+<li> SQLite persistence with FTS5 full-text search
+Mli> Proxy support for restricted feeds
+</td>
+</tr></table>
 
 ## Pipeline
 
