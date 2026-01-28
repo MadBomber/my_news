@@ -1,10 +1,56 @@
 # frozen_string_literal: true
 
 require "thor"
+require "fileutils"
 require "ruby-progressbar"
 
 module MyNews
   class CLI < Thor
+    desc "init", "Initialize ~/.config/my_news with default configuration"
+    def init
+      config_dir = File.expand_path("~/.config/my_news")
+      db_dir     = File.join(config_dir, "db")
+      config_file = File.join(config_dir, "my_news.yml")
+
+      FileUtils.mkdir_p(db_dir)
+
+      if File.exist?(config_file)
+        puts "Config already exists: #{config_file}"
+      else
+        File.write(config_file, <<~YAML)
+          # MyNews configuration
+          # Overrides bundled defaults. See gem source for all options.
+          # Environment variables: MY_NEWS_<SECTION>__<KEY> (e.g. MY_NEWS_LLM__MODEL)
+
+          database:
+            path: #{db_dir}/my_news.db
+
+          llm:
+            provider: openai
+            model: gpt-4o-mini
+            # api_key sourced from OPENAI_API_KEY env var
+
+          # schedule:
+          #   times:
+          #     - "07:00"
+          #     - "13:00"
+          #     - "19:00"
+          #   timezone: America/Chicago
+        YAML
+        puts "Created: #{config_file}"
+      end
+
+      puts <<~HEREDOC
+
+        MyNews initialized at #{config_dir}
+          Config: #{config_file}
+          Database: #{db_dir}/my_news.db
+
+        Edit #{config_file} to customize settings.
+        Run 'my_news fetch' to start.
+      HEREDOC
+    end
+
     desc "fetch", "Fetch all enabled RSS feeds"
     def fetch
       MyNews.setup

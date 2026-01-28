@@ -1,6 +1,6 @@
 defaults:
   database:
-    path: db/my_news.db
+    path: ~/.config/my_news/db/my_news.db
 
   fetch:
     concurrency: 10
@@ -341,7 +341,7 @@ defaults:
 
 development:
   database:
-    path: db/my_news_dev.db
+    path: ~/.config/my_news/db/my_news_dev.db
 
 test:
   database:
@@ -349,6 +349,6 @@ test:
 
 production:
   database:
-    path: db/my_news.db
+    path: ~/.config/my_news/db/my_news.db
   fetch:
     concurrency: 20

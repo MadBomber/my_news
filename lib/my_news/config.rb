@@ -13,12 +13,12 @@ module MyNews
     # Load external YAML lists (feeds, bulletins) and merge into config
     def initialize(config_dir: nil, **kwargs)
       super(**kwargs)
-      @config_dir = config_dir || File.expand_path("../../config", __dir__)
+      @config_dir = config_dir || File.expand_path("~/.config/my_news")
       load_external_configs
     end
 
     def database_path
-      database.path
+      File.expand_path(database.path)
     end
 
     def fetch_concurrency
