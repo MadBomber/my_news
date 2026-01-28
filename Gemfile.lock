@@ -1,10 +1,9 @@
 PATH
   remote: .
   specs:
-    my_news (0.1.0)
+    my_news (0.0.1)
       async (~> 2.0)
       async-http (~> 0.75)
-      debug_me
       faraday (~> 2.0)
       myway_config
       nokogiri (~> 1.16)
@@ -179,6 +178,7 @@ PLATFORMS
 
 DEPENDENCIES
   aigcm
+  debug_me
   irb
   minitest (~> 5.16)
   my_news!
@@ -218,7 +218,7 @@ CHECKSUMS
   metrics (0.15.0) sha256=61ded5bac95118e995b1bc9ed4a5f19bc9814928a312a85b200abbdac9039072
   minitest (5.27.0) sha256=2d3b17f8a36fe7801c1adcffdbc38233b938eb0b4966e97a6739055a45fa77d5
   multipart-post (2.4.1) sha256=9872d03a8e552020ca096adadbf5e3cb1cd1cdd6acd3c161136b8a5737cdb4a8
-  my_news (0.1.0)
+  my_news (0.0.1)
   myway_config (0.1.2) sha256=c91741ded05babc443fcf5d012741ded8a1a1998c40a689cb32af27940b66be3
   net-http (0.9.1) sha256=25ba0b67c63e89df626ed8fac771d0ad24ad151a858af2cc8e6a716ca4336996
   nokogiri (1.19.0-aarch64-linux-gnu) sha256=11a97ecc3c0e7e5edcf395720b10860ef493b768f6aa80c539573530bc933767

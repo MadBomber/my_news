@@ -14,7 +14,6 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
 
-  spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
@@ -28,7 +27,7 @@ Gem::Specification.new do |spec|
         f.start_with?(*%w[bin/ Gemfile .gitignore test/])
     end
   end
-  spec.bindir = "exe"
+  spec.bindir = "bin"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
@@ -38,7 +37,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "async-http", "~> 0.75"
   spec.add_dependency "rss", "~> 0.3"
   spec.add_dependency "thor", "~> 1.3"
-  spec.add_dependency "debug_me"
   spec.add_dependency "myway_config"
   spec.add_dependency "nokogiri", "~> 1.16"
   spec.add_dependency "reverse_markdown", "~> 2.1"
