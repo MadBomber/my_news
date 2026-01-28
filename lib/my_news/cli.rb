@@ -6,6 +6,22 @@ require "ruby-progressbar"
 
 module MyNews
   class CLI < Thor
+    package_name "MyNews"
+
+    def self.banner_header
+      <<~HEADER
+
+        my_news v#{MyNews::VERSION} — RSS feed pipeline that transforms feeds into themed bulletins
+
+      HEADER
+    end
+
+    def self.help(shell, subcommand = false)
+      shell.say banner_header
+      super
+      shell.say "\n"
+    end
+
     desc "init", "Initialize ~/.config/my_news with default configuration"
     def init
       config_dir = File.expand_path("~/.config/my_news")
