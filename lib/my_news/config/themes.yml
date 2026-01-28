@@ -1,0 +1,141 @@
+themes:
+  - name: ruby
+    keywords:
+      - ruby
+      - rails
+      - gem
+      - bundler
+      - rspec
+      - minitest
+      - sidekiq
+      - puma
+      - turbo
+      - hotwire
+      - sequel
+    feeds:
+      - Ruby Weekly
+      - RubyFlow
+      - Rubyland News
+      - Ruby Language News
+      - Rails Blog
+      - RubyGems Blog
+      - Rails Weblog
+      - Schneems
+      - Evil Martians
+      - Thoughtbot Ruby
+      - Saeloun
+      - BigBinary
+      - Zverok
+      - Nithin Bekal
+      - Solnic
+      - Ruby on Rails Podcast
+      - Remote Ruby
+      - Ruby Rogues
+      - The Ruby AI Podcast
+  - name: ai
+    keywords:
+      - artificial intelligence
+      - machine learning
+      - deep learning
+      - neural network
+      - large language model
+      - llm
+      - gpt
+      - claude
+      - transformer
+      - diffusion
+      - reinforcement learning
+      - natural language processing
+      - computer vision
+      - generative ai
+      - fine-tuning
+      - rag
+      - embedding
+      - prompt engineering
+    feeds:
+      - OpenAI Blog
+      - Anthropic Blog
+      - Google AI Blog
+      - Meta AI Blog
+      - Google DeepMind
+      - Hugging Face Blog
+      - The Decoder
+      - MarkTechPost
+      - Import AI
+      - Simon Willison
+      - Lilian Weng
+      - Andrej Karpathy
+      - Latent Space
+      - Interconnects
+      - Sebastian Raschka
+      - arXiv AI
+      - arXiv Computational Linguistics
+      - arXiv Machine Learning
+      - The Ruby AI Podcast
+  - name: tech
+    keywords:
+      - programming
+      - software
+      - python
+      - javascript
+      - rust
+      - linux
+      - open source
+      - github
+      - api
+    feeds:
+      - Hacker News
+      - Lobsters
+  - name: science
+    keywords:
+      - science
+      - research
+      - physics
+      - biology
+      - climate
+      - space
+      - nature
+    feeds: []
+  - name: madbomber
+    keywords: []
+    feeds:
+      - "gem: cli_helper"
+      - "gem: leaflet_helper"
+      - "gem: aia"
+      - "gem: debug_me"
+      - "gem: sqa"
+      - "gem: woodwing_elvis"
+      - "gem: justprep"
+      - "gem: rethinkdb_helper"
+      - "gem: prompt_manager"
+      - "gem: kick_the_tires"
+      - "gem: ai_client"
+      - "gem: ocassionally"
+      - "gem: smart_message"
+      - "gem: htm"
+      - "gem: ragdoll"
+      - "gem: shared_tools"
+      - "gem: simple_flow"
+      - "gem: myway_config"
+      - "gem: agent99"
+      - "gem: ragdoll-cli"
+      - "gem: ragdoll-rails"
+      - "gem: trak_flow"
+      - "gem: api_key_manager"
+      - "gem: aigcm"
+      - "gem: sqa-tai"
+      - "gem: dumb_stock_api"
+      - "gem: one_time_pad"
+      - "gem: simple_acp"
+      - "gem: kbs"
+      - "gem: fact_db"
+      - "gem: sqa_demo-sinatra"
+      - "gem: robot_lab"
+      - "gem: bunny_farm"
+      - "gem: writers_room"
+      - MadBomber Blog
+  - name: general
+    keywords: []
+    feeds:
+      - Ars Technica
+      - The Verge

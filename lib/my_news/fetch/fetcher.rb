@@ -31,8 +31,6 @@ module MyNews
         results
       end
 
-      private
-
       def ensure_feeds_exist
         config.feeds.each do |feed_data|
           next if Models::Feed.where(url: feed_data["url"]).any?
@@ -45,6 +43,8 @@ module MyNews
           )
         end
       end
+
+      private
 
       def handler_for(feed)
         handler_name = feed.handler
