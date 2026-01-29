@@ -94,8 +94,17 @@ module MyNews
     end
 
     def load_yaml(filename)
-      path = File.join(@config_dir, filename)
-      return {} unless File.exist?(path)
+      # Try user config dir first, fall back to bundled config
+      user_path = File.join(@config_dir, filename)
+      bundled_path = File.expand_path("config/#{filename}", __dir__)
+
+      path = if File.exist?(user_path)
+               user_path
+             elsif File.exist?(bundled_path)
+               bundled_path
+             end
+
+      return {} unless path
 
       YAML.safe_load_file(path) || {}
     end

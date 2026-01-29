@@ -15,20 +15,24 @@ class TestCli < Minitest::Test
     assert MyNews::CLI.method_defined?(:search)
   end
 
-  def test_cli_responds_to_feeds
-    assert MyNews::CLI.method_defined?(:feeds)
+  def test_feed_cli_responds_to_list
+    assert MyNews::FeedCLI.method_defined?(:list)
   end
 
-  def test_cli_responds_to_feed_add
-    assert MyNews::CLI.method_defined?(:feed_add)
+  def test_feed_cli_responds_to_add
+    assert MyNews::FeedCLI.method_defined?(:add)
   end
 
-  def test_cli_responds_to_feed_remove
-    assert MyNews::CLI.method_defined?(:feed_remove)
+  def test_feed_cli_responds_to_remove
+    assert MyNews::FeedCLI.method_defined?(:remove)
   end
 
-  def test_cli_responds_to_feed_toggle
-    assert MyNews::CLI.method_defined?(:feed_toggle)
+  def test_feed_cli_responds_to_toggle
+    assert MyNews::FeedCLI.method_defined?(:toggle)
+  end
+
+  def test_feed_cli_responds_to_search
+    assert MyNews::FeedCLI.method_defined?(:search)
   end
 
   def test_cli_responds_to_status
